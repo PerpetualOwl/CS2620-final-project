@@ -1,0 +1,365 @@
+openapi: 3.0.3
+info:
+  title: Proof-of-Stake Blockchain Node API (SIMCOIN Simulation)
+  description: API endpoints for interacting with the simulated Proof-of-Stake blockchain node, including wallet creation, token transfers, and node management.
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:{port}
+    description: Local development server
+    variables:
+      port:
+        default: '10000'
+        description: Port number the node server is running on.
+paths:
+  /:
+    get:
+      summary: Get Node UI
+      description: Serves the basic HTML web interface for interacting with the node. Also displays flashed messages and balance check results via redirects.
+      responses:
+        '200':
+          description: HTML UI page.
+          content:
+            text/html:
+              schema:
+                type: string
+                format: html
+        '500':
+          description: Blockchain not initialized error.
+  /transactions/new:
+    post:
+      summary: Create New Transaction
+      description: Adds a new transaction to the list of pending transactions. Checks sender balance unless the sender is the faucet address ('0'). Can accept JSON or form data.
+      requestBody:
+        description: Transaction details.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewTransactionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NewTransactionRequest'
+      responses:
+        '201':
+          description: Transaction added successfully (JSON response).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Transaction will be added to Block 12.
+        '200':
+          description: Transaction submitted successfully (HTML response via redirect with flash message).
+          content:
+            text/html:
+              schema:
+                type: string
+                format: html
+        '400':
+          description: Bad request (e.g., missing fields, invalid amount, insufficient balance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            text/html:
+              schema: # Response for form submission is redirect with flash message
+                type: string
+                format: html
+  /chain:
+    get:
+      summary: Get Full Blockchain
+      description: Returns the entire blockchain structure held by this node.
+      responses:
+        '200':
+          description: The full blockchain.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  chain:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Block'
+                  length:
+                    type: integer
+                    example: 15
+  /nodes/register:
+    post:
+      summary: Register Peer Nodes
+      description: Adds one or more peer nodes to this node's list of known peers. Can accept JSON list or comma-separated form data. Assigns default stake to new nodes.
+      requestBody:
+        description: List of node addresses to register.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nodes:
+                  type: array
+                  items:
+                    type: string
+                    format: url # Or host:port string
+                    example: ["http://127.0.0.1:5001", "192.168.1.10:5000"]
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                nodes:
+                  type: string
+                  description: Comma-separated node addresses.
+                  example: "127.0.0.1:5001,http://192.168.1.10:5000"
+      responses:
+        '201':
+          description: Nodes registered successfully (JSON response).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 2 new node(s) registered successfully.
+                  total_nodes:
+                    type: array
+                    items:
+                      type: string
+                      example: "127.0.0.1:5001"
+        '200':
+           description: Nodes registered successfully (HTML response via redirect with flash message).
+           content:
+             text/html:
+               schema:
+                 type: string
+                 format: html
+        '400':
+          description: Bad request (e.g., invalid node list format).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+            text/html:
+              schema: # Response for form submission is redirect with flash message
+                type: string
+                format: html
+  /nodes/get:
+    get:
+      summary: Get Known Peer Nodes
+      description: Returns the list of peer nodes currently known by this node.
+      responses:
+        '200':
+          description: List of known peer node addresses.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nodes:
+                    type: array
+                    items:
+                      type: string
+                      example: "127.0.0.1:5001"
+  /resolve:
+    get:
+      summary: Resolve Conflicts (Run Consensus)
+      description: Triggers the node's consensus algorithm to check peer nodes for longer valid chains and replace its own chain if necessary.
+      responses:
+        '200':
+          description: Consensus process finished (JSON or HTML response).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Our chain is authoritative or no conflicts resolved.
+            text/html:
+               schema: # Response for button click is redirect with flash message
+                 type: string
+                 format: html
+  /receive_block:
+    post:
+      summary: Receive Block from Peer
+      description: Endpoint for peer nodes to broadcast newly forged blocks to this node. The node validates the block before adding it.
+      requestBody:
+        description: The block data.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Block'
+      responses:
+        '200':
+          description: Block accepted and added successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Block added successfully
+        '400':
+          description: Block rejected (e.g., invalid structure, index out of order, previous hash mismatch, hash verification failed).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /wallet/new:
+    post:
+      summary: Create New Wallet
+      description: Generates a new simulated wallet address (UUID). Does not involve private keys in this simulation.
+      responses:
+        '201':
+          description: Wallet created successfully (JSON response).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: New wallet created successfully.
+                  address:
+                    type: string
+                    format: uuid
+                    example: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+        '200':
+           description: Wallet created successfully (HTML response via redirect with flash message).
+           content:
+             text/html:
+               schema:
+                 type: string
+                 format: html
+  /balance/{address}:
+    get:
+      summary: Get Wallet Balance
+      description: Calculates and returns the current SIMCOIN balance for the specified wallet address by iterating through the blockchain.
+      parameters:
+        - name: address
+          in: path
+          required: true
+          description: The wallet address to check the balance for.
+          schema:
+            type: string
+            example: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+      responses:
+        '200':
+          description: Balance details for the address (JSON or HTML response).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceResponse'
+            text/html:
+               schema: # Response for balance check is redirect with balance info
+                 type: string
+                 format: html
+        '400':
+          description: Bad request (e.g., address parameter missing).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Transaction:
+      type: object
+      properties:
+        sender:
+          type: string
+          description: Address of the sender (use '0' for faucet/minting).
+          example: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+        recipient:
+          type: string
+          description: Address of the recipient.
+          example: "b2c3d4e5-f6a7-8901-2345-67890abcdef0"
+        amount:
+          type: integer
+          format: int32
+          description: Amount of SIMCOIN transferred.
+          example: 100
+        timestamp:
+          type: number
+          format: float
+          description: UNIX timestamp of the transaction creation.
+          example: 1678886400.123
+        transaction_id:
+          type: string
+          format: uuid
+          description: Unique identifier for the transaction.
+          example: "c3d4e5f6-a7b8-9012-3456-7890abcdef01"
+
+    Block:
+      type: object
+      properties:
+        index:
+          type: integer
+          format: int32
+          example: 1
+        timestamp:
+          type: number
+          format: float
+          example: 1678886460.456
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+        previous_hash:
+          type: string
+          example: "0000abcd..."
+        validator:
+          type: string
+          description: Identifier of the node that forged this block.
+          example: "127.0.0.1:5000"
+        hash:
+          type: string
+          description: SHA-256 hash of the block's content.
+          example: "0000efgh..."
+
+    NewTransactionRequest:
+      type: object
+      required:
+        - sender
+        - recipient
+        - amount
+      properties:
+        sender:
+          type: string
+          description: Address of the sender (use '0' for faucet/minting).
+          example: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+        recipient:
+          type: string
+          description: Address of the recipient.
+          example: "b2c3d4e5-f6a7-8901-2345-67890abcdef0"
+        amount:
+          type: integer
+          format: int32
+          description: Amount of SIMCOIN transferred (must be positive).
+          example: 100
+
+    BalanceResponse:
+      type: object
+      properties:
+        address:
+          type: string
+          example: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+        balance:
+          type: integer
+          format: int64 # Use int64 for potentially large balances
+          example: 1500
+        token_name:
+          type: string
+          example: "SIMCOIN"
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Error message describing the issue."
+

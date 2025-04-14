@@ -1,0 +1,18 @@
+{
+    "chain": [
+        {
+            "index": 0,
+            "timestamp": 1744640300.509274,
+            "transactions": [],
+            "previous_hash": "0",
+            "validator": "Genesis",
+            "hash": "df1fa04f7e462cf66b9737c553ca83366290511f6bead0b02275d8882303a16f"
+        }
+    ],
+    "pending_transactions": [],
+    "nodes": [],
+    "stakes": {
+        "127.0.0.1:10001": 100
+    },
+    "known_wallets": []
+}
