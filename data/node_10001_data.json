@@ -7,6 +7,22 @@
             "previous_hash": "0",
             "validator": "Genesis",
             "hash": "df1fa04f7e462cf66b9737c553ca83366290511f6bead0b02275d8882303a16f"
+        },
+        {
+            "index": 1,
+            "timestamp": 1746338329.4842,
+            "transactions": [
+                {
+                    "sender": "0",
+                    "recipient": "de907a45-c56f-40e6-bcec-ca1c2674ee95",
+                    "amount": 100,
+                    "timestamp": 1746338315.23054,
+                    "transaction_id": "0ddf68fd-7df6-40fb-8f3d-7a6c88c73e5c"
+                }
+            ],
+            "previous_hash": "df1fa04f7e462cf66b9737c553ca83366290511f6bead0b02275d8882303a16f",
+            "validator": "127.0.0.1:10001",
+            "hash": "d5d513132e748b07b0936224fbc81c874d2bb3ebe793ec8f73650839e4a011f6"
         }
     ],
     "pending_transactions": [],
@@ -14,5 +30,7 @@
     "stakes": {
         "127.0.0.1:10001": 100
     },
-    "known_wallets": []
+    "known_wallets": [
+        "de907a45-c56f-40e6-bcec-ca1c2674ee95"
+    ]
 }

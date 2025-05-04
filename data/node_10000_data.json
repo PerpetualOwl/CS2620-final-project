@@ -7,6 +7,178 @@
             "previous_hash": "0",
             "validator": "Genesis",
             "hash": "69b531d10f981de1eee5d59597b29522da028b95ed15f9a1969334dadbb68ca1"
+        },
+        {
+            "index": 1,
+            "timestamp": 1746391231.312345,
+            "transactions": [
+                {
+                    "sender": "0",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 100,
+                    "timestamp": 1746391213.788351,
+                    "transaction_id": "b93271ab-9eb9-428e-80cb-2f41262d279e"
+                }
+            ],
+            "previous_hash": "69b531d10f981de1eee5d59597b29522da028b95ed15f9a1969334dadbb68ca1",
+            "validator": "127.0.0.1:10000",
+            "hash": "3d18fa963f04feaf55a2ade8b147fdc2b3f995607d2af67eb8e0d34e31ece648"
+        },
+        {
+            "index": 2,
+            "timestamp": 1746393531.8885682,
+            "transactions": [
+                {
+                    "sender": "0",
+                    "recipient": "1",
+                    "amount": 1,
+                    "timestamp": 1746393512.786817,
+                    "transaction_id": "fbbd77c9-fa0d-43aa-8001-53bbb5cd9cfd"
+                }
+            ],
+            "previous_hash": "3d18fa963f04feaf55a2ade8b147fdc2b3f995607d2af67eb8e0d34e31ece648",
+            "validator": "127.0.0.1:10000",
+            "hash": "6fdcb931c6291be239bbcd369bc1cbc2ba8eba4c568f2232f140fcbbee04b8c0"
+        },
+        {
+            "index": 3,
+            "timestamp": 1746393931.976515,
+            "transactions": [
+                {
+                    "sender": "0",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 100,
+                    "timestamp": 1746393914.248804,
+                    "transaction_id": "085ff7b8-24f9-42f8-bd4a-a7fce378883f"
+                },
+                {
+                    "sender": "0",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 100,
+                    "timestamp": 1746393926.181827,
+                    "transaction_id": "fb0e63ee-e55e-44af-828d-1648970b567e"
+                }
+            ],
+            "previous_hash": "6fdcb931c6291be239bbcd369bc1cbc2ba8eba4c568f2232f140fcbbee04b8c0",
+            "validator": "127.0.0.1:10000",
+            "hash": "254ff378c72ef7451c44e1b9c5133effecd303c1cab2553dfa886cedee9aa84f"
+        },
+        {
+            "index": 4,
+            "timestamp": 1746393951.9912,
+            "transactions": [
+                {
+                    "sender": "0",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 100,
+                    "timestamp": 1746393947.3030841,
+                    "transaction_id": "1d2afa0d-2334-4ed6-a46c-1200323de712"
+                }
+            ],
+            "previous_hash": "254ff378c72ef7451c44e1b9c5133effecd303c1cab2553dfa886cedee9aa84f",
+            "validator": "127.0.0.1:10000",
+            "hash": "076ddbec36d151740415b74856a02accb41433d4bdd64a65ca4c86a1174e0140"
+        },
+        {
+            "index": 5,
+            "timestamp": 1746393992.0089011,
+            "transactions": [
+                {
+                    "sender": "0",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 100,
+                    "timestamp": 1746393973.805676,
+                    "transaction_id": "6412fbcf-e47c-4db3-a70c-afb41e351f1d"
+                },
+                {
+                    "sender": "0",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 100,
+                    "timestamp": 1746393980.999585,
+                    "transaction_id": "425cda93-4db1-4e1a-b301-5153306f2f32"
+                }
+            ],
+            "previous_hash": "076ddbec36d151740415b74856a02accb41433d4bdd64a65ca4c86a1174e0140",
+            "validator": "127.0.0.1:10000",
+            "hash": "fffe69870687cc2bba05034efcd3708fe857a131496c6220d3aab57d559cdb0c"
+        },
+        {
+            "index": 6,
+            "timestamp": 1746394032.024225,
+            "transactions": [
+                {
+                    "sender": "0",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 100,
+                    "timestamp": 1746394015.194376,
+                    "transaction_id": "93182555-364d-49e1-b845-e26f50f5d6c0"
+                },
+                {
+                    "sender": "0",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 100,
+                    "timestamp": 1746394028.325546,
+                    "transaction_id": "e7e8967e-6db9-42b9-9dbe-a3a88f180979"
+                }
+            ],
+            "previous_hash": "fffe69870687cc2bba05034efcd3708fe857a131496c6220d3aab57d559cdb0c",
+            "validator": "127.0.0.1:10000",
+            "hash": "e5a79f9644b5df8e9df36512fe6112201754e239e086b70569ace8ae9ab399de"
+        },
+        {
+            "index": 7,
+            "timestamp": 1746394052.031127,
+            "transactions": [
+                {
+                    "sender": "0",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 100,
+                    "timestamp": 1746394036.6803288,
+                    "transaction_id": "51a93d9e-2912-48db-bf80-652d802fd144"
+                },
+                {
+                    "sender": "0",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 100,
+                    "timestamp": 1746394050.9344451,
+                    "transaction_id": "2edb5c32-beec-4433-a0b0-fff0726809d0"
+                }
+            ],
+            "previous_hash": "e5a79f9644b5df8e9df36512fe6112201754e239e086b70569ace8ae9ab399de",
+            "validator": "127.0.0.1:10000",
+            "hash": "ea3c83e13a178580e3fbd841f4d4438e13bb9ad18ccaf6a4d724548160890c9c"
+        },
+        {
+            "index": 8,
+            "timestamp": 1746394072.036163,
+            "transactions": [
+                {
+                    "sender": "0",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 100,
+                    "timestamp": 1746394069.453145,
+                    "transaction_id": "3f4b9e38-c213-4cb9-ad7a-36dd1ed878f6"
+                }
+            ],
+            "previous_hash": "ea3c83e13a178580e3fbd841f4d4438e13bb9ad18ccaf6a4d724548160890c9c",
+            "validator": "127.0.0.1:10000",
+            "hash": "77b214763b5f22e1a8d95bdcc8dae9f7f5f2ff655998c860c672c5adf31da16b"
+        },
+        {
+            "index": 9,
+            "timestamp": 1746394532.145547,
+            "transactions": [
+                {
+                    "sender": "0",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 100,
+                    "timestamp": 1746394524.8761191,
+                    "transaction_id": "a706f85c-7ecc-4e9e-b43d-5a28277d2558"
+                }
+            ],
+            "previous_hash": "77b214763b5f22e1a8d95bdcc8dae9f7f5f2ff655998c860c672c5adf31da16b",
+            "validator": "127.0.0.1:10000",
+            "hash": "3d5e89bfbdffc3d55af31d8b7614fcb5e5d9dd6b212ce36ec394949e47b28d84"
         }
     ],
     "pending_transactions": [],
@@ -14,5 +186,7 @@
     "stakes": {
         "127.0.0.1:10000": 100
     },
-    "known_wallets": []
+    "known_wallets": [
+        "fae5af82-3a13-4a83-81d1-247408f3f45e"
+    ]
 }
