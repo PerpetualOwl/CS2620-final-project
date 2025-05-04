@@ -14,7 +14,7 @@ PORTS = 10000 10001 10002
 
 # --- Targets ---
 
-.PHONY: all clean run_nodes stop_nodes run_node_10000 run_node_10001 run_node_10002
+.PHONY: all clean run_nodes stop_nodes run_node_10000 run_node_10001 run_node_10002 test install_dev
 
 # Default target: runs multiple nodes
 all: run_nodes
@@ -61,3 +61,15 @@ run_node_10002:
 	@mkdir -p $(DATA_DIR)
 	$(PYTHON) $(SCRIPT) --port 10002 --peers 127.0.0.1:10000,127.0.0.1:10001
 
+
+# Install development dependencies
+install_dev:
+	@echo "Installing development requirements..."
+	@$(PYTHON) -m pip install -r requirements.txt
+	@$(PYTHON) -m pip install -r requirements-dev.txt
+
+# Run tests using pytest
+test: install_dev
+	@echo "Running tests..."
+	@$(PYTHON) -m pytest -v tests/
+	@echo "Tests finished."

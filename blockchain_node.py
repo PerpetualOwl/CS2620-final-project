@@ -22,13 +22,15 @@ FAUCET_ADDRESS = "0" # Special address for minting/initial distribution
 # --- Block Class ---
 class Block:
     # (No changes needed in Block class itself for this update)
-    def __init__(self, index, timestamp, transactions, previous_hash, validator, hash_val=None):
+    def __init__(self, index, timestamp, transactions, previous_hash, validator, hash=None): # Renamed hash_val to hash
         self.index = index
-        self.timestamp = timestamp
+        # Ensure timestamp is float for consistency, default to time() if None
+        self.timestamp = float(timestamp) if timestamp is not None else time()
         self.transactions = transactions # List of transaction dicts
         self.previous_hash = previous_hash
         self.validator = validator # Address of the node that forged this block
-        self.hash = hash_val if hash_val else self.calculate_hash()
+        # Calculate hash if not provided during init (e.g., when loading from storage)
+        self.hash = hash if hash else self.calculate_hash()
 
     def calculate_hash(self):
         """Calculates the SHA-256 hash of the block."""
@@ -83,7 +85,7 @@ class Blockchain:
     def load_data(self):
         """Loads blockchain state from a file."""
         if not os.path.exists(DATA_DIR):
-             os.makedirs(DATA_DIR)
+             os.makedirs(DATA_DIR, exist_ok=True) # Allow directory to exist
 
         try:
             if os.path.exists(self.data_file):
@@ -120,7 +122,7 @@ class Blockchain:
     def save_data(self):
         """Saves blockchain state to a file."""
         if not os.path.exists(DATA_DIR):
-             os.makedirs(DATA_DIR)
+             os.makedirs(DATA_DIR, exist_ok=True) # Allow directory to exist
         try:
             data = {
                 # Convert Block objects to dictionaries for JSON serialization
@@ -143,7 +145,7 @@ class Blockchain:
         """Creates the first block in the chain."""
         genesis_block = Block(
             index=0,
-            timestamp=time(),
+            timestamp=0, # Use fixed timestamp 0 for predictable genesis hash
             transactions=[], # No transactions initially, use faucet address '0' later
             previous_hash="0",
             validator="Genesis",
@@ -215,11 +217,14 @@ class Blockchain:
         Add a new node to the list of nodes. Assigns default stake.
         """
         parsed_url = urlparse(address)
+        logging.debug(f"Parsed URL for '{address}': {parsed_url}") # DEBUG LOGGING
         node_addr_to_add = None
+        # Prioritize netloc (handles http://host:port)
+        # Fallback to path if netloc is empty (handles host:port)
         if parsed_url.netloc:
-             node_addr_to_add = parsed_url.netloc
-        elif parsed_url.path and ':' in parsed_url.path: # Simple check for host:port format
-             node_addr_to_add = parsed_url.path
+            node_addr_to_add = parsed_url.netloc
+        elif not parsed_url.scheme and parsed_url.path and ':' in parsed_url.path: # Check for colon in path
+            node_addr_to_add = parsed_url.path
 
         if node_addr_to_add:
             self.nodes.add(node_addr_to_add)
@@ -228,7 +233,11 @@ class Blockchain:
             if node_addr_to_add not in self.stakes:
                 self.stakes[node_addr_to_add] = 50 # Assign a default stake
                 logging.info(f"Assigned default stake of 50 to new node {node_addr_to_add}")
-            self.save_data() # Save after registering node
+            try:
+                self.save_data() # Save after registering node
+            except Exception as e:
+                logging.error(f"Error during save_data in register_node for {node_addr_to_add}: {e}", exc_info=True)
+                # Decide if registration should fail if save fails - currently it doesn't explicitly
             return True
         else:
             logging.error(f"Invalid node address supplied: {address}")
@@ -390,7 +399,9 @@ class Blockchain:
         logging.info("Starting conflict resolution...")
         # Grab and verify the chains from all the nodes in our network
         for node in neighbours:
-            if f"http://{node}" == request.host_url or node == self.node_identifier: # Don't query self
+            # Check if the node address/identifier matches self to avoid self-query
+            # Removed dependency on request context (request.host_url)
+            if node == self.node_identifier: # Don't query self
                  continue
             try:
                 logging.info(f"Requesting chain from {node}...")
