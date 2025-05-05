@@ -179,6 +179,410 @@
             "previous_hash": "77b214763b5f22e1a8d95bdcc8dae9f7f5f2ff655998c860c672c5adf31da16b",
             "validator": "127.0.0.1:10000",
             "hash": "3d5e89bfbdffc3d55af31d8b7614fcb5e5d9dd6b212ce36ec394949e47b28d84"
+        },
+        {
+            "index": 10,
+            "timestamp": 1746411437.633336,
+            "transactions": [
+                {
+                    "sender": "0",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 1000,
+                    "token_type": "SECOND",
+                    "timestamp": 1746411435.419256,
+                    "transaction_id": "263c5736-e2b0-4ad4-93a0-aba9fef2b651"
+                }
+            ],
+            "previous_hash": "3d5e89bfbdffc3d55af31d8b7614fcb5e5d9dd6b212ce36ec394949e47b28d84",
+            "validator": "127.0.0.1:10000",
+            "hash": "3e02d8c450f9bb7a5cb9ff4afbd4f427404e67acfdf5b141bff2d0f0f9dc300b"
+        },
+        {
+            "index": 11,
+            "timestamp": 1746412117.791063,
+            "transactions": [
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "1",
+                    "amount": 100,
+                    "token_type": "SECOND",
+                    "timestamp": 1746412113.861315,
+                    "transaction_id": "3b788f5c-4961-40d8-99e0-720868239cf5"
+                }
+            ],
+            "previous_hash": "3e02d8c450f9bb7a5cb9ff4afbd4f427404e67acfdf5b141bff2d0f0f9dc300b",
+            "validator": "127.0.0.1:10000",
+            "hash": "c8f3160db783af147e3c58d359158234b1d3caaf2b34ec38bfb201feba13dda1"
+        },
+        {
+            "index": 12,
+            "timestamp": 1746412177.804498,
+            "transactions": [
+                {
+                    "sender": "0",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 10000,
+                    "token_type": "MAIN",
+                    "timestamp": 1746412176.746719,
+                    "transaction_id": "6c71c114-414e-470a-b7ed-b04d30518b2a"
+                }
+            ],
+            "previous_hash": "c8f3160db783af147e3c58d359158234b1d3caaf2b34ec38bfb201feba13dda1",
+            "validator": "127.0.0.1:10000",
+            "hash": "344404ec0cbbc3080789ef372e7e54571a0c8d4cbbb49fa132abd0c5a74ee373"
+        },
+        {
+            "index": 13,
+            "timestamp": 1746412417.8720262,
+            "transactions": [
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "c7e64326-46ea-460a-996b-deb509556533",
+                    "amount": 500,
+                    "token_type": "MAIN",
+                    "timestamp": 1746412400.980253,
+                    "transaction_id": "07ab9ff9-9d6d-4bc4-9a25-9eacb64c7858"
+                },
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "ee0e7eb0-5848-4d7f-aa30-698121198f97",
+                    "amount": 707,
+                    "token_type": "MAIN",
+                    "timestamp": 1746412400.986615,
+                    "transaction_id": "a6c5a2c9-52c9-472f-bdfa-8843e502cb7b"
+                },
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "ed34590e-a383-47cd-a324-08e6e1035fb4",
+                    "amount": 4,
+                    "token_type": "SECOND",
+                    "timestamp": 1746412400.989841,
+                    "transaction_id": "ce989352-70b6-40e8-be31-317cbed98d1b"
+                }
+            ],
+            "previous_hash": "344404ec0cbbc3080789ef372e7e54571a0c8d4cbbb49fa132abd0c5a74ee373",
+            "validator": "127.0.0.1:10000",
+            "hash": "341c0fbb8f10b2a94b4385bc5d4697156987bd20c284c5578c3708953804f29d"
+        },
+        {
+            "index": 14,
+            "timestamp": 1746412657.932815,
+            "transactions": [
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "ecf85c6e-fa40-4ebe-8fb7-b2369b33f509",
+                    "amount": 500,
+                    "token_type": "MAIN",
+                    "timestamp": 1746412657.6200478,
+                    "transaction_id": "2ad6e084-260c-4232-8773-4fa0309698ff"
+                },
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "a2cb5975-4528-4bf9-8476-6da36e5fb417",
+                    "amount": 707,
+                    "token_type": "MAIN",
+                    "timestamp": 1746412657.626697,
+                    "transaction_id": "4fdc096f-e700-4ece-825b-7f2d65e10b3d"
+                },
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "f9d82046-ccd5-4be4-b855-6b0d9a292571",
+                    "amount": 4,
+                    "token_type": "SECOND",
+                    "timestamp": 1746412657.630529,
+                    "transaction_id": "cfd1ca6d-4be2-45e7-a0b1-cd3a12719d8b"
+                }
+            ],
+            "previous_hash": "341c0fbb8f10b2a94b4385bc5d4697156987bd20c284c5578c3708953804f29d",
+            "validator": "127.0.0.1:10000",
+            "hash": "c36b766414a63447dbb018a864296fbcbcef686938e08008f0c80d15f8bcfe2f"
+        },
+        {
+            "index": 15,
+            "timestamp": 1746412757.963965,
+            "transactions": [
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "02f30ab7-2ef0-4d0a-9513-6b7cca71298c",
+                    "amount": 500,
+                    "token_type": "MAIN",
+                    "timestamp": 1746412738.799467,
+                    "transaction_id": "c02630be-ce2a-4351-948b-76f36c384fc3"
+                },
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "535746e7-c3ad-4a92-9914-c06a6c23309e",
+                    "amount": 707,
+                    "token_type": "MAIN",
+                    "timestamp": 1746412738.8040462,
+                    "transaction_id": "3987de4e-3c33-4ac5-a6a8-7e5ff5bc5f25"
+                },
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "bffcb60d-e545-427c-b14c-1c262607bb5e",
+                    "amount": 4,
+                    "token_type": "SECOND",
+                    "timestamp": 1746412738.8072681,
+                    "transaction_id": "06b6570f-35d8-4848-b4d8-a426cb04458b"
+                }
+            ],
+            "previous_hash": "c36b766414a63447dbb018a864296fbcbcef686938e08008f0c80d15f8bcfe2f",
+            "validator": "127.0.0.1:10000",
+            "hash": "324da195c566ce2c797191a1be194f922c951ff00f6b33b711dc3e9d0a1c2eea"
+        },
+        {
+            "index": 16,
+            "timestamp": 1746413238.0837388,
+            "transactions": [
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "MARKET_ADDR",
+                    "amount": 500,
+                    "token_type": "MAIN",
+                    "timestamp": 1746413234.824471,
+                    "transaction_id": "ea48e184-6b13-4b91-8214-68b11e904900"
+                },
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "MARKET_ADDR",
+                    "amount": 707,
+                    "token_type": "MAIN",
+                    "timestamp": 1746413234.8289568,
+                    "transaction_id": "aabf6675-939f-4cd9-8c72-c316489242d9"
+                },
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "MARKET_ADDR",
+                    "amount": 4,
+                    "token_type": "SECOND",
+                    "timestamp": 1746413234.835856,
+                    "transaction_id": "26fca7df-aa9b-4dba-996f-94ef6d9c9cb7"
+                }
+            ],
+            "previous_hash": "324da195c566ce2c797191a1be194f922c951ff00f6b33b711dc3e9d0a1c2eea",
+            "validator": "127.0.0.1:10000",
+            "hash": "154f778adc4751ad1a83907671b3463e9b74d82dbf00ca5e57d9ef8eb49a0864"
+        },
+        {
+            "index": 17,
+            "timestamp": 1746413278.107691,
+            "transactions": [
+                {
+                    "sender": "0",
+                    "recipient": "MARKET_ADDR",
+                    "amount": 10000000,
+                    "token_type": "MAIN",
+                    "timestamp": 1746413270.955894,
+                    "transaction_id": "a2ccd512-9c10-4a4e-a01a-9f018f06e7b5"
+                }
+            ],
+            "previous_hash": "154f778adc4751ad1a83907671b3463e9b74d82dbf00ca5e57d9ef8eb49a0864",
+            "validator": "127.0.0.1:10000",
+            "hash": "d1f57413905d00b7c653896a8b33f000ae9e39c603d932b7d1c9ae70c6485d79"
+        },
+        {
+            "index": 18,
+            "timestamp": 1746413298.116841,
+            "transactions": [
+                {
+                    "sender": "0",
+                    "recipient": "MARKET_ADDR",
+                    "amount": 1000000,
+                    "token_type": "MAIN",
+                    "timestamp": 1746413280.732028,
+                    "transaction_id": "b6714d4e-6c5b-4cf9-9a84-b4f607b2c0a9"
+                }
+            ],
+            "previous_hash": "d1f57413905d00b7c653896a8b33f000ae9e39c603d932b7d1c9ae70c6485d79",
+            "validator": "127.0.0.1:10000",
+            "hash": "77cdaecbc0bfe0beae8e97c12810e396edc10ff066a1c18d94a7afab3ececeb9"
+        },
+        {
+            "index": 19,
+            "timestamp": 1746413318.127558,
+            "transactions": [
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "MARKET_ADDR",
+                    "amount": 500,
+                    "token_type": "MAIN",
+                    "timestamp": 1746413302.817636,
+                    "transaction_id": "4638b563-3416-4747-a6ef-fc731ac42b3e"
+                },
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "MARKET_ADDR",
+                    "amount": 707,
+                    "token_type": "MAIN",
+                    "timestamp": 1746413302.824925,
+                    "transaction_id": "890b20e4-f5d2-48f2-8b81-9a540646d18f"
+                },
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "MARKET_ADDR",
+                    "amount": 4,
+                    "token_type": "SECOND",
+                    "timestamp": 1746413302.8278809,
+                    "transaction_id": "b9eccdbf-0317-46c9-a59b-8cb868da8294"
+                },
+                {
+                    "sender": "MARKET_ADDR",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 500,
+                    "token_type": "MAIN",
+                    "timestamp": 1746413302.831126,
+                    "transaction_id": "c9425e8e-30b3-4789-a39a-a32065e1e804"
+                },
+                {
+                    "sender": "MARKET_ADDR",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 707,
+                    "token_type": "MAIN",
+                    "timestamp": 1746413302.834084,
+                    "transaction_id": "41135cf8-8b69-4b5b-9378-77063e088441"
+                },
+                {
+                    "sender": "MARKET_ADDR",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 4,
+                    "token_type": "SECOND",
+                    "timestamp": 1746413302.8373,
+                    "transaction_id": "5c3692c6-96bb-4df1-9b06-43e656448b33"
+                }
+            ],
+            "previous_hash": "77cdaecbc0bfe0beae8e97c12810e396edc10ff066a1c18d94a7afab3ececeb9",
+            "validator": "127.0.0.1:10000",
+            "hash": "8e051a0dcd4a36969e57c13edeb3328d4d66c0ee04044b40bbc605ff34413753"
+        },
+        {
+            "index": 20,
+            "timestamp": 1746413358.143643,
+            "transactions": [
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "MARKET_ADDR",
+                    "amount": 500,
+                    "token_type": "MAIN",
+                    "timestamp": 1746413353.0826392,
+                    "transaction_id": "3d61a3ab-fc1b-44bd-965b-5c16dd845783"
+                },
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "MARKET_ADDR",
+                    "amount": 707,
+                    "token_type": "MAIN",
+                    "timestamp": 1746413353.093241,
+                    "transaction_id": "c07c3840-5f13-4f88-af1a-9527b14809cc"
+                },
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "MARKET_ADDR",
+                    "amount": 4,
+                    "token_type": "SECOND",
+                    "timestamp": 1746413353.09617,
+                    "transaction_id": "4187db47-b3c5-4ced-9178-1cff4ac80ef0"
+                },
+                {
+                    "sender": "MARKET_ADDR",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 500,
+                    "token_type": "MAIN",
+                    "timestamp": 1746413353.099284,
+                    "transaction_id": "384431c5-9d82-49bd-afaa-457eb824ec51"
+                },
+                {
+                    "sender": "MARKET_ADDR",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 707,
+                    "token_type": "MAIN",
+                    "timestamp": 1746413353.102207,
+                    "transaction_id": "33726390-8d3e-4c98-a022-99a3ab0043fb"
+                },
+                {
+                    "sender": "MARKET_ADDR",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 4,
+                    "token_type": "SECOND",
+                    "timestamp": 1746413353.1053162,
+                    "transaction_id": "bc9d89a0-390a-4659-a79f-ab39f768fe2b"
+                }
+            ],
+            "previous_hash": "8e051a0dcd4a36969e57c13edeb3328d4d66c0ee04044b40bbc605ff34413753",
+            "validator": "127.0.0.1:10000",
+            "hash": "a4b139d89f31df1e0dd5e9d89b0f969fbc676a59920efdd91772fcf3c0732bbd"
+        },
+        {
+            "index": 21,
+            "timestamp": 1746413458.1763608,
+            "transactions": [
+                {
+                    "sender": "0",
+                    "recipient": "MARKET_ADDR",
+                    "amount": 10000000000,
+                    "token_type": "MAIN",
+                    "timestamp": 1746413446.397263,
+                    "transaction_id": "2133381d-409e-4229-8b5d-dacadf005d2a"
+                },
+                {
+                    "sender": "0",
+                    "recipient": "MARKET_ADDR",
+                    "amount": 10000000000,
+                    "token_type": "SECOND",
+                    "timestamp": 1746413446.4034119,
+                    "transaction_id": "8e668fa5-4d5b-498d-9580-4e69dc8c7e00"
+                },
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "MARKET_ADDR",
+                    "amount": 500,
+                    "token_type": "MAIN",
+                    "timestamp": 1746413446.4071229,
+                    "transaction_id": "ba414c29-8337-4f28-91cc-642391b2a7c3"
+                },
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "MARKET_ADDR",
+                    "amount": 707,
+                    "token_type": "MAIN",
+                    "timestamp": 1746413446.410159,
+                    "transaction_id": "1b943fec-303e-4fd6-b57d-20cb48f834c1"
+                },
+                {
+                    "sender": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "recipient": "MARKET_ADDR",
+                    "amount": 4,
+                    "token_type": "SECOND",
+                    "timestamp": 1746413446.4133818,
+                    "transaction_id": "7d692035-4b30-430a-a59f-6d69cd1f3f01"
+                },
+                {
+                    "sender": "MARKET_ADDR",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 500,
+                    "token_type": "MAIN",
+                    "timestamp": 1746413446.417793,
+                    "transaction_id": "1f90c1a3-53ea-45ae-9800-2a8caf083f13"
+                },
+                {
+                    "sender": "MARKET_ADDR",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 707,
+                    "token_type": "MAIN",
+                    "timestamp": 1746413446.421427,
+                    "transaction_id": "fc7175a1-4a60-4ea9-8d43-4c3b9350be2e"
+                },
+                {
+                    "sender": "MARKET_ADDR",
+                    "recipient": "fae5af82-3a13-4a83-81d1-247408f3f45e",
+                    "amount": 4,
+                    "token_type": "SECOND",
+                    "timestamp": 1746413446.4251761,
+                    "transaction_id": "9c32c48e-a0fe-4ca8-b26b-c0524aaaa40e"
+                }
+            ],
+            "previous_hash": "a4b139d89f31df1e0dd5e9d89b0f969fbc676a59920efdd91772fcf3c0732bbd",
+            "validator": "127.0.0.1:10000",
+            "hash": "3b66f25b9e13112120325bdc32296ea0ce7e4eb6a4604435a79da9c09898390f"
         }
     ],
     "pending_transactions": [],
@@ -187,6 +591,7 @@
         "127.0.0.1:10000": 100
     },
     "known_wallets": [
+        "6b600a9d-9df5-4a75-a454-3f94f47ec32e",
         "fae5af82-3a13-4a83-81d1-247408f3f45e"
     ]
 }

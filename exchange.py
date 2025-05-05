@@ -1,5 +1,3 @@
-SYMBOL = "DOG"
-
 class Node:
     __slots__ = ("value", "prev", "next")          # keeps the nodes leaner
     def __init__(self, value, prev=None, nxt=None):
@@ -60,44 +58,59 @@ class LinkedList:
             cur = cur.next
 
 
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 import requests
-BASE = "http://127.0.0.1:10000"
+from blockchain_client import PosNodeClient
+client = PosNodeClient()
 wallet_addr="fae5af82-3a13-4a83-81d1-247408f3f45e"
-tx = {
-    "sender": "0",                 # faucet address → mints new coins
-    "recipient": wallet_addr,      # or any known UUID
-    "amount": 100                  # positive integer
-}
-r = requests.post(f"{BASE}/transactions/new", json=tx)
-print(r.status_code, r.json())     # 201 → {"message": "... Block #N"}
+
+# r = client.create_transaction(wallet_addr, "HI", 1300)
+# print(r)     # 201 → {"message": "... Block #N"}
 from sortedcontainers import SortedDict
 import uuid
 
 
 class Order:
     def __init__(self, addr: str, size: int, price: int, buy: bool = True):
-        self.id = uuid.uuid4()
+        self.id = str(uuid.uuid4())
         self.buy = buy
         self.addr = addr
         self.size = size
         self.price = price
+        if self.buy:
+            self.remaining = price * self.size
+        else:
+            self.remaining = self.size
         
 class Market:
-    def __init__(self):
+    def __init__(self, host: str = "127.0.0.1", port: Union[int, str] = 10000):
         # price → FIFO queue of orders
         # For bids we store *negative* price so the best bid appears first when peeking index‑0
         self.bids: SortedDict[int, LinkedList] = SortedDict()
         self.asks: SortedDict[int, LinkedList] = SortedDict()
+        self.addr = "MARKET_ADDR"
 
         # order_id → (price_key, *_Node_*) so we can cancel in O(1)
         self.open_orders: Dict[str, (int, Node)] = {}
+        self.client = PosNodeClient(host, port)
+        self.client.create_transaction("0", self.addr, 10000000000)
+        self.client.create_transaction("0", self.addr, 10000000000, token="SECOND")
 
     # --------------------------------------------------------
     # order entry / cancel
     # --------------------------------------------------------
     def add_order(self, order: Order):
         """Add an order and store its node pointer for O(1) cancel."""
+        if order.buy:
+            try:
+                r = self.client.create_transaction(order.addr, self.addr, order.remaining)
+            except: 
+                return None
+        else:
+            try:
+                r = self.client.create_transaction(order.addr, self.addr, order.remaining, token="SECOND")
+            except:
+                return None
         if order.buy:
             key = -order.price           # negate so high price == low key
             book = self.bids
@@ -111,6 +124,7 @@ class Market:
 
         # (price_key, node, side_is_bid)
         self.open_orders[order.id] = (key, node)
+        self.resolve_market(order.buy)
         return order.id
 
     def cancel(self, order_id: str) -> bool:
@@ -119,8 +133,13 @@ class Market:
             return False
         key, node = rec
         book = self.bids if node.value.buy else self.asks
+        order = node.value
         ll = book[key]
         ll.remove(node)
+        if order.buy:
+            r = self.client.create_transaction(self.addr, order.addr, order.remaining)
+        else:
+            r = self.client.create_transaction(self.addr, order.addr, order.remaining, token="SECOND")
         if len(ll) == 0:
             del book[key]
         return True
@@ -128,7 +147,7 @@ class Market:
     # --------------------------------------------------------
     # Matching loop
     # --------------------------------------------------------
-    def resolve_market(self) -> List[Tuple[str, str, int, int]]:
+    def resolve_market(self, buy: bool) -> List[Tuple[str, str, int, int]]:
         """Run continuous matching until best bid < best ask.
 
         Returns a list of trades as tuples: (bid_id, ask_id, size, price)"""
@@ -150,14 +169,23 @@ class Market:
             ask_order: Order = ask_node.value
 
             trade_qty = min(bid_order.size, ask_order.size)
-            trade_price = ask_order.price   # classic price‑time: use resting price (ask)
+            if buy:
+                trade_price = ask_order.price   # classic price‑time: use resting price (ask)
+            else:
+                trade_price = bid_order.price
             trades.append((bid_order.id, ask_order.id, trade_qty, trade_price))
 
             # decrement sizes & clean up if filled
             bid_order.size -= trade_qty
+            bid_order.remaining -= trade_qty * trade_price
             ask_order.size -= trade_qty
+            ask_order.remaining -= trade_qty
+            
+            self.client.create_transaction(self.addr, bid_order.addr, trade_qty, token="SECOND")
+            self.client.create_transaction(self.addr, ask_order.addr, trade_qty * trade_price)
 
             if bid_order.size == 0:
+                self.client.create_transaction(self.addr, bid_order.addr, bid_order.remaining)
                 bid_queue.remove(bid_node)
                 self.open_orders.pop(bid_order.id, None)
                 if len(bid_queue) == 0:
@@ -192,15 +220,17 @@ if __name__ == "__main__":
     m = Market()
 
     # Place some orders
-    m.add_order(Order(addr="", price=100, size=5, buy=True))            # bid 5@100
-    id = m.add_order(Order(addr="", price=101, size=7, buy=True))            # bid 7@101  (better)
+    id1 = m.add_order(Order(addr=wallet_addr, price=100, size=5, buy=True))            # bid 5@100
+    id2 = m.add_order(Order(addr=wallet_addr, price=101, size=7, buy=True))            # bid 7@101  (better)
 
-    m.add_order(Order(addr="", price=102, size=4, buy=False))           # ask 4@102 (crosses!)
+    id3 = m.add_order(Order(addr=wallet_addr, price=102, size=4, buy=False))           # ask 4@102 
 
-    print("Trades:", m.resolve_market())
+    print("Trades:", m.resolve_market(True))
     print("Best bid/ask:", m.best_bid(), m.best_ask())
+    print(id1)
+    print(m.cancel(id1))
+    print(m.cancel(id2))
+    print(m.cancel(id3))
     
-    print(m.cancel(id))
-    
-    print("Trades:", m.resolve_market())
+    print("Trades:", m.resolve_market(True))
     print("Best bid/ask:", m.best_bid(), m.best_ask())
