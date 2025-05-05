@@ -13,9 +13,9 @@ import logging
 import uuid # For generating simple wallet addresses
 
 # --- Configuration ---
-logging.basicConfig(level=logging.INFO)
+# Logging will be configured in main after node_identifier is set
 DATA_DIR = "data" # Directory to store node data
-FORGING_INTERVAL_SECONDS = 20 # How often nodes check if they should forge
+FORGING_INTERVAL_SECONDS = 10 # How often nodes check if they should forge (Reduced from 20)
 TOKEN_NAME = "MAIN" # Name of the main token
 SECONDARY_TOKEN_NAME = "SECOND" # Name of the secondary token
 FAUCET_ADDRESS = "0" # Special address for minting/initial distribution
@@ -436,7 +436,7 @@ class Blockchain:
             if node == self.node_identifier: # Don't query self
                  continue
             try:
-                logging.info(f"Requesting chain from {node}...")
+                logging.info(f"Consensus: Requesting chain from peer {node}...") # Added 'Consensus:' prefix and 'peer'
                 # Ensure scheme is present for requests
                 node_url = node if node.startswith(('http://', 'https://')) else f'http://{node}'
                 response = requests.get(f'{node_url}/chain', timeout=10) # Add timeout
@@ -451,21 +451,22 @@ class Blockchain:
                          continue # Skip this node
 
                     # Check if the length is longer and the chain is valid
+                    logging.debug(f"Consensus: Received chain from {node} with length {length}. Current max length: {max_length}")
                     if length > max_length:
-                         logging.info(f"Found potentially longer chain (length {length}) from {node}. Validating...")
+                         logging.info(f"Consensus: Found potentially longer chain (length {length}) from {node}. Validating...")
                          # Validate the received chain data before accepting
                          if self.is_chain_valid(chain_data):
                              max_length = length
                              # Recreate the chain with Block objects only if valid
                              new_chain_blocks = [Block(**block_data) for block_data in chain_data]
                              new_chain = new_chain_blocks # Store the validated Block objects
-                             logging.info(f"Validated longer chain from {node}. It is now the candidate.")
+                             logging.info(f"Consensus: Validated longer chain from {node} (length {length}). It is now the candidate.")
                          else:
-                              logging.warning(f"Received longer chain from {node} but it FAILED validation.")
+                              logging.warning(f"Consensus: Received longer chain from {node} (length {length}) but it FAILED validation.")
                     elif length == max_length:
-                         logging.info(f"Received chain from {node} has same length ({length}). Ignoring.")
+                         logging.info(f"Consensus: Received chain from {node} has same length ({length}) as current. Ignoring.")
                     else:
-                         logging.info(f"Received chain from {node} is shorter ({length}). Ignoring.")
+                         logging.info(f"Consensus: Received chain from {node} is shorter ({length} < {max_length}). Ignoring.")
 
                 else:
                      logging.warning(f"Failed to get chain from {node}. Status code: {response.status_code}")
@@ -480,17 +481,18 @@ class Blockchain:
 
         # Replace our chain if we discovered a new, valid, longer chain
         if new_chain:
-            logging.info("Replacing current chain with the longer valid chain found.")
+            logging.info("Consensus: Replacing current chain with the longer valid chain found.")
             self.chain = new_chain
             # Clear pending transactions as they might be in the new chain
             # A more robust system would reconcile transactions
             self.pending_transactions = []
             self.save_data() # Save the new chain
-            logging.info("Chain replaced successfully.")
-            return True
+            logging.info("Consensus: Chain replaced successfully.")
+            return True # Return True when replaced
 
-        logging.info("Conflict resolution finished. Our chain remains authoritative or no longer valid chain found.")
-        return False
+        # If no new_chain was found and validated
+        # logging.info("Consensus: Conflict resolution finished. Our chain remains authoritative or no longer valid chain found.") # Moved log below
+        return False # Return False when not replaced
 
     def broadcast_block(self, new_block):
         """Sends the newly forged block to all registered peer nodes."""
@@ -1058,7 +1060,7 @@ def receive_block():
     blockchain.pending_transactions = new_pending_transactions
 
     blockchain.save_data()
-    logging.info(f"Accepted and added block #{received_block.index} from peer.")
+    logging.info(f"Receive_Block: Successfully accepted and added block #{received_block.index} from peer.") # Added prefix
     return jsonify({'message': 'Block added successfully'}), 200
 
 # --- Wallet and Balance Endpoints ---
@@ -1124,9 +1126,11 @@ def forging_loop():
 
             # Resolve conflicts periodically before attempting to forge
             # Optional: Can be done less frequently or triggered differently
-            # logging.info("Running periodic conflict resolution before forging check...")
-            # blockchain.resolve_conflicts()
-            # logging.info("Conflict resolution finished.")
+            logging.info("Forge Loop: Running periodic conflict resolution before forging check...")
+            blockchain.resolve_conflicts()
+            logging.info("Forge Loop: Periodic conflict resolution finished.")
+            blockchain.resolve_conflicts()
+            logging.info("Forge Loop: Periodic conflict resolution finished.")
 
 
             # Only forge if there are pending transactions
@@ -1176,10 +1180,15 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     port = args.port
-    host = args.host
 
     # Set node identifier (used for PoS staking)
     node_identifier = args.id if args.id else f"127.0.0.1:{port}" # Default to localhost:port for staking ID
+
+    log_format = f'%(asctime)s - %(levelname)s - [{node_identifier}] - %(message)s'
+    logging.basicConfig(level=logging.INFO, format=log_format)
+    # Re-log identifier now that logging is configured
+    logging.info(f"Node identifier (for PoS): {node_identifier}")
+    host = args.host
 
     # Define data file path based on port for local testing uniqueness
     data_file = os.path.join(DATA_DIR, f"node_{port}_data.json") # Changed filename slightly
