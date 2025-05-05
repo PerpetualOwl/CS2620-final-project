@@ -163,8 +163,8 @@ class Market:
             if best_bid_price < best_ask_price:
                 break   # market crossed, nothing to do
 
-            bid_node = bid_queue.front_node()
-            ask_node = ask_queue.front_node()
+            bid_node = bid_queue.head.next
+            ask_node = ask_queue.head.next
             bid_order: Order = bid_node.value
             ask_order: Order = ask_node.value
 
