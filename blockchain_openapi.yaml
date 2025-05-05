@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: Proof-of-Stake Blockchain Node API (SIMCOIN Simulation)
-  description: API endpoints for interacting with the simulated Proof-of-Stake blockchain node, including wallet creation, token transfers, and node management.
-  version: 1.0.0
+  title: Proof-of-Stake Blockchain Node API (Dual Token Simulation)
+  description: API endpoints for interacting with the simulated Proof-of-Stake blockchain node, supporting two tokens (MAIN and SECOND). Includes wallet creation, token transfers, and node management.
+  version: 1.1.0
 servers:
   - url: http://127.0.0.1:{port}
     description: Local development server
@@ -28,9 +28,9 @@ paths:
   /transactions/new:
     post:
       summary: Create New Transaction
-      description: Adds a new transaction to the list of pending transactions. Checks sender balance unless the sender is the faucet address ('0'). Can accept JSON or form data.
+      description: Adds a new transaction (MAIN or SECOND token) to the list of pending transactions. Checks sender balance for the specified token unless the sender is the faucet address ('0'). Can accept JSON or form data.
       requestBody:
-        description: Transaction details.
+        description: Transaction details, including the optional token type (defaults to MAIN).
         required: true
         content:
           application/json:
@@ -238,7 +238,7 @@ paths:
   /balance/{address}:
     get:
       summary: Get Wallet Balance
-      description: Calculates and returns the current SIMCOIN balance for the specified wallet address by iterating through the blockchain.
+      description: Calculates and returns the current balances (MAIN and SECOND tokens) for the specified wallet address by iterating through the blockchain.
       parameters:
         - name: address
           in: path
@@ -249,7 +249,7 @@ paths:
             example: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
       responses:
         '200':
-          description: Balance details for the address (JSON or HTML response).
+          description: Balance details (both tokens) for the address (JSON or HTML response).
           content:
             application/json:
               schema:
@@ -281,8 +281,15 @@ components:
         amount:
           type: integer
           format: int32
-          description: Amount of SIMCOIN transferred.
+          description: Amount of token transferred.
           example: 100
+        token_type:
+          type: string
+          description: The type of token transferred (e.g., MAIN, SECOND). Defaults to MAIN if omitted in older blocks.
+          enum:
+            - MAIN
+            - SECOND
+          example: "MAIN"
         timestamp:
           type: number
           format: float
@@ -339,22 +346,49 @@ components:
         amount:
           type: integer
           format: int32
-          description: Amount of SIMCOIN transferred (must be positive).
+          description: Amount of token to transfer (must be positive).
           example: 100
+        token_type:
+          type: string
+          description: The type of token to transfer. Defaults to MAIN if omitted.
+          enum:
+            - MAIN
+            - SECOND
+          default: "MAIN"
+          example: "SECOND"
 
     BalanceResponse:
       type: object
+      description: Contains the balances for both token types for a given address.
       properties:
         address:
           type: string
           example: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
-        balance:
-          type: integer
-          format: int64 # Use int64 for potentially large balances
-          example: 1500
+        balances:
+          type: object
+          description: An object containing the balance for each token type.
+          properties:
+            MAIN:
+              type: integer
+              format: int64
+              description: Balance of the main token.
+              example: 1500
+            SECOND:
+              type: integer
+              format: int64
+              description: Balance of the secondary token.
+              example: 250
+          required:
+             - MAIN
+             - SECOND
         token_name:
-          type: string
-          example: "SIMCOIN"
+           type: string
+           description: Name of the main token (for reference).
+           example: "MAIN"
+        secondary_token_name:
+           type: string
+           description: Name of the secondary token (for reference).
+           example: "SECOND"
 
     ErrorResponse:
       type: object

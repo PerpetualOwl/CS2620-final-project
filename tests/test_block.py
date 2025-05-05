@@ -4,9 +4,10 @@ import json
 from time import time
 from blockchain_node import Block # Assuming blockchain_node.py is in the root or PYTHONPATH
 
-# Sample data for testing
-TX1 = {'sender': 'a', 'recipient': 'b', 'amount': 10, 'timestamp': time() - 10, 'transaction_id': 'tx1'}
-TX2 = {'sender': 'c', 'recipient': 'd', 'amount': 5, 'timestamp': time() - 5, 'transaction_id': 'tx2'}
+# Sample data for testing (assuming blockchain_node defines TOKEN_NAME and SECONDARY_TOKEN_NAME)
+# If not, define them here or import them properly. For now, using strings directly.
+TX1 = {'sender': 'a', 'recipient': 'b', 'amount': 10, 'token_type': 'MAIN', 'timestamp': time() - 10, 'transaction_id': 'tx1'}
+TX2 = {'sender': 'c', 'recipient': 'd', 'amount': 5, 'token_type': 'SECOND', 'timestamp': time() - 5, 'transaction_id': 'tx2'}
 # Ensure consistent order for hashing tests
 SORTED_TX = sorted([TX1, TX2], key=lambda tx: tx['timestamp'])
 
@@ -80,7 +81,7 @@ def test_block_to_dict(sample_block, sample_block_data):
 def test_block_hash_consistency():
     """Test that two identical blocks produce the same hash."""
     ts = time()
-    txs = [{'sender': 'x', 'recipient': 'y', 'amount': 1, 'timestamp': ts -1, 'transaction_id': 't1'}]
+    txs = [{'sender': 'x', 'recipient': 'y', 'amount': 1, 'token_type': 'MAIN', 'timestamp': ts -1, 'transaction_id': 't1'}]
     block1 = Block(index=5, timestamp=ts, transactions=txs, previous_hash="prev123", validator="val1")
     block2 = Block(index=5, timestamp=ts, transactions=txs, previous_hash="prev123", validator="val1")
 
@@ -89,35 +90,40 @@ def test_block_hash_consistency():
 def test_block_hash_sensitivity():
     """Test that changing any attribute changes the hash."""
     ts = time()
-    txs = [{'sender': 'x', 'recipient': 'y', 'amount': 1, 'timestamp': ts -1, 'transaction_id': 't1'}]
+    txs = [{'sender': 'x', 'recipient': 'y', 'amount': 1, 'token_type': 'MAIN', 'timestamp': ts -1, 'transaction_id': 't1'}]
     base_block = Block(index=5, timestamp=ts, transactions=txs, previous_hash="prev123", validator="val1")
 
     # Change index
     block_diff_index = Block(index=6, timestamp=ts, transactions=txs, previous_hash="prev123", validator="val1")
-    assert base_block.hash != block_diff_index.hash
+    assert base_block.hash != block_diff_index.hash, "Hash should change with index"
 
     # Change timestamp
     block_diff_ts = Block(index=5, timestamp=ts + 1, transactions=txs, previous_hash="prev123", validator="val1")
-    assert base_block.hash != block_diff_ts.hash
+    assert base_block.hash != block_diff_ts.hash, "Hash should change with timestamp"
 
-    # Change transactions
-    txs_diff = [{'sender': 'z', 'recipient': 'y', 'amount': 1, 'timestamp': ts -1, 'transaction_id': 't2'}]
-    block_diff_tx = Block(index=5, timestamp=ts, transactions=txs_diff, previous_hash="prev123", validator="val1")
-    assert base_block.hash != block_diff_tx.hash
+    # Change transactions (different content)
+    txs_diff_content = [{'sender': 'z', 'recipient': 'y', 'amount': 1, 'token_type': 'MAIN', 'timestamp': ts -1, 'transaction_id': 't2'}]
+    block_diff_tx_content = Block(index=5, timestamp=ts, transactions=txs_diff_content, previous_hash="prev123", validator="val1")
+    assert base_block.hash != block_diff_tx_content.hash, "Hash should change with different transaction content"
+
+    # Change transactions (different token_type)
+    txs_diff_type = [{'sender': 'x', 'recipient': 'y', 'amount': 1, 'token_type': 'SECOND', 'timestamp': ts -1, 'transaction_id': 't1'}]
+    block_diff_tx_type = Block(index=5, timestamp=ts, transactions=txs_diff_type, previous_hash="prev123", validator="val1")
+    assert base_block.hash != block_diff_tx_type.hash, "Hash should change with different token_type"
 
     # Change previous_hash
     block_diff_prev = Block(index=5, timestamp=ts, transactions=txs, previous_hash="prev456", validator="val1")
-    assert base_block.hash != block_diff_prev.hash
+    assert base_block.hash != block_diff_prev.hash, "Hash should change with previous_hash"
 
     # Change validator
     block_diff_val = Block(index=5, timestamp=ts, transactions=txs, previous_hash="prev123", validator="val2")
-    assert base_block.hash != block_diff_val.hash
+    assert base_block.hash != block_diff_val.hash, "Hash should change with validator"
 
 def test_block_hash_transaction_order_insensitivity():
     """Test that the order of transactions in the input list doesn't affect the hash."""
     ts = time()
-    tx1 = {'sender': 'a', 'recipient': 'b', 'amount': 10, 'timestamp': ts - 10, 'transaction_id': 'tx1'}
-    tx2 = {'sender': 'c', 'recipient': 'd', 'amount': 5, 'timestamp': ts - 5, 'transaction_id': 'tx2'}
+    tx1 = {'sender': 'a', 'recipient': 'b', 'amount': 10, 'token_type': 'MAIN', 'timestamp': ts - 10, 'transaction_id': 'tx1'}
+    tx2 = {'sender': 'c', 'recipient': 'd', 'amount': 5, 'token_type': 'SECOND', 'timestamp': ts - 5, 'transaction_id': 'tx2'}
 
     block1 = Block(index=1, timestamp=ts, transactions=[tx1, tx2], previous_hash="prev", validator="val")
     block2 = Block(index=1, timestamp=ts, transactions=[tx2, tx1], previous_hash="prev", validator="val") # Reversed order

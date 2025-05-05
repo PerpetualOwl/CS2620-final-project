@@ -16,7 +16,8 @@ import uuid # For generating simple wallet addresses
 logging.basicConfig(level=logging.INFO)
 DATA_DIR = "data" # Directory to store node data
 FORGING_INTERVAL_SECONDS = 20 # How often nodes check if they should forge
-TOKEN_NAME = "SIMCOIN" # Name of the main token
+TOKEN_NAME = "MAIN" # Name of the main token
+SECONDARY_TOKEN_NAME = "SECOND" # Name of the secondary token
 FAUCET_ADDRESS = "0" # Special address for minting/initial distribution
 
 # --- Block Class ---
@@ -160,55 +161,80 @@ class Blockchain:
 
     def get_balance(self, address):
         """
-        Calculates the balance of an address by iterating through the chain.
+        Calculates the balances (main and secondary tokens) of an address
+        by iterating through the chain.
         NOTE: Inefficient for long chains. Real blockchains use optimized state databases.
+        Returns:
+            dict: A dictionary containing balances for TOKEN_NAME and SECONDARY_TOKEN_NAME.
+                  e.g., {'MAIN': 100, 'SECOND': 50}
         """
-        balance = 0
-        logging.debug(f"Calculating balance for address: {address}")
+        balances = {TOKEN_NAME: 0, SECONDARY_TOKEN_NAME: 0}
+        logging.debug(f"Calculating balances for address: {address}")
         for block in self.chain:
             for tx in block.transactions:
                 try:
                     amount = int(tx.get('amount', 0)) # Ensure amount is integer
+                    token_type = tx.get('token_type', TOKEN_NAME) # Default to main token if missing
+
+                    # Ensure token_type is valid before proceeding
+                    if token_type not in balances:
+                        logging.warning(f"Skipping transaction in block {block.index} due to unknown token_type '{token_type}': {tx}")
+                        continue
+
                     if tx.get('recipient') == address:
-                        balance += amount
-                        logging.debug(f"  Block {block.index}: +{amount} (Received)")
+                        balances[token_type] += amount
+                        logging.debug(f"  Block {block.index}: +{amount} {token_type} (Received)")
                     if tx.get('sender') == address:
-                        balance -= amount
-                        logging.debug(f"  Block {block.index}: -{amount} (Sent)")
+                        balances[token_type] -= amount
+                        logging.debug(f"  Block {block.index}: -{amount} {token_type} (Sent)")
                 except (ValueError, TypeError) as e:
                      logging.warning(f"Skipping transaction due to invalid amount in block {block.index}: {tx}. Error: {e}")
                      continue # Skip transaction if amount is invalid
-        logging.debug(f"Final calculated balance for {address}: {balance}")
-        return balance
+        logging.debug(f"Final calculated balances for {address}: {balances}")
+        return balances
 
-    def add_transaction(self, sender, recipient, amount):
+    def add_transaction(self, sender, recipient, amount, token_type=TOKEN_NAME):
         """
-        Adds a new token transaction to the list of pending transactions.
-        Validates sender balance (unless sender is the faucet '0').
+        Adds a new transaction (main or secondary token) to the list of pending transactions.
+        Validates sender balance for the specific token_type (unless sender is the faucet '0').
+        Args:
+            sender (str): Address of the sender.
+            recipient (str): Address of the recipient.
+            amount (int): Amount of tokens to send.
+            token_type (str): The type of token being sent (e.g., TOKEN_NAME or SECONDARY_TOKEN_NAME).
+                               Defaults to TOKEN_NAME.
+        Returns:
+            int or None: The index of the block that will hold this transaction, or None if failed.
         """
+        if token_type not in [TOKEN_NAME, SECONDARY_TOKEN_NAME]:
+            logging.error(f"Transaction failed: Invalid token_type '{token_type}'. Must be '{TOKEN_NAME}' or '{SECONDARY_TOKEN_NAME}'.")
+            return None
+
         if not isinstance(amount, int) or amount <= 0:
              logging.error(f"Transaction failed: Invalid amount ({amount}). Must be a positive integer.")
              return None
 
         # Check balance ONLY if sender is not the faucet address
         if sender != FAUCET_ADDRESS:
-            sender_balance = self.get_balance(sender)
-            if sender_balance < amount:
-                logging.error(f"Transaction failed: Sender '{sender}' has insufficient balance ({sender_balance} {TOKEN_NAME}) for amount {amount} {TOKEN_NAME}.")
+            sender_balances = self.get_balance(sender) # Get dict of balances
+            sender_token_balance = sender_balances.get(token_type, 0)
+            if sender_token_balance < amount:
+                logging.error(f"Transaction failed: Sender '{sender}' has insufficient balance ({sender_token_balance} {token_type}) for amount {amount} {token_type}.")
                 return None
-            logging.info(f"Sender '{sender}' balance check OK ({sender_balance} >= {amount})")
+            logging.info(f"Sender '{sender}' balance check OK for {token_type} ({sender_token_balance} >= {amount})")
         else:
-             logging.info(f"Transaction from Faucet Address '{FAUCET_ADDRESS}'. Balance check skipped.")
+             logging.info(f"Transaction from Faucet Address '{FAUCET_ADDRESS}' for {token_type}. Balance check skipped.")
 
         transaction = {
             'sender': sender,
             'recipient': recipient,
             'amount': amount,
+            'token_type': token_type, # Store the token type
             'timestamp': time(),
             'transaction_id': str(uuid.uuid4()) # Add unique ID for tracking
         }
         self.pending_transactions.append(transaction)
-        logging.info(f"Transaction added: {sender} -> {recipient} ({amount} {TOKEN_NAME})")
+        logging.info(f"Transaction added: {sender} -> {recipient} ({amount} {token_type})")
         self.save_data() # Save after adding transaction
         return self.last_block.index + 1 # Next block index
 
@@ -372,8 +398,14 @@ class Blockchain:
                 #    - Ensure amounts are positive integers
                 #    - Could add more checks here (e.g., format of addresses)
                 for tx in current_block.transactions:
+                     # Check amount validity
                      if not isinstance(tx.get('amount'), int) or tx.get('amount', 0) <= 0:
                           logging.warning(f"Chain invalid: Block {current_block.index} contains transaction with invalid amount: {tx}")
+                          return False
+                     # Check token_type validity (allow missing, defaults to main)
+                     token_type = tx.get('token_type', TOKEN_NAME)
+                     if token_type not in [TOKEN_NAME, SECONDARY_TOKEN_NAME]:
+                          logging.warning(f"Chain invalid: Block {current_block.index} contains transaction with invalid token_type '{token_type}': {tx}")
                           return False
 
             except (KeyError, TypeError) as e:
@@ -568,7 +600,7 @@ HTML_TEMPLATE = """
 
         <h1>Node Information</h1>
         <p><strong>Node Address (for PoS):</strong> {{ node_id }}</p>
-        <p><strong>Current PoS Stake:</strong> {{ stake }}</p>
+        <p><strong>Current PoS Stake:</strong> {{ stake }} (Uses {{ token_name }})</p>
 
         <hr>
 
@@ -615,7 +647,11 @@ HTML_TEMPLATE = """
                  </script>
                  {% if balance_info %}
                  <div class="alert alert-info mt-3">
-                     Balance for {{ balance_info.address }}: <strong>{{ balance_info.balance }} {{ token_name }}</strong>
+                     <p>Balances for {{ balance_info.address }}:</p>
+                     <ul>
+                         <li><strong>{{ token_name }}:</strong> {{ balance_info.balances.get(token_name, 0) }}</li>
+                         <li><strong>{{ secondary_token_name }}:</strong> {{ balance_info.balances.get(secondary_token_name, 0) }}</li>
+                     </ul>
                  </div>
                  {% endif %}
                  {% if balance_error %}
@@ -629,25 +665,34 @@ HTML_TEMPLATE = """
 
         <hr>
 
-        <h2>Send {{ token_name }} Transaction</h2>
+        <h2>Send Transaction</h2>
         <p class="text-muted">Use address '{{ faucet_address }}' as sender to mint new coins (for testing).</p>
         <form action="/transactions/new" method="post">
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="sender" class="form-label">Sender Address</label>
-                    <input type="text" class="form-control" id="sender" name="sender" required>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="recipient" class="form-label">Recipient Address</label>
-                    <input type="text" class="form-control" id="recipient" name="recipient" required>
-                </div>
-            </div>
-            <div class="mb-3">
-                <label for="amount" class="form-label">Amount ({{ token_name }})</label>
-                <input type="number" class="form-control" id="amount" name="amount" required min="1">
-            </div>
-            <button type="submit" class="btn btn-primary">Submit Transaction</button>
-        </form>
+             <div class="row">
+                 <div class="col-md-6 mb-3">
+                     <label for="sender" class="form-label">Sender Address</label>
+                     <input type="text" class="form-control" id="sender" name="sender" required>
+                 </div>
+                 <div class="col-md-6 mb-3">
+                     <label for="recipient" class="form-label">Recipient Address</label>
+                     <input type="text" class="form-control" id="recipient" name="recipient" required>
+                 </div>
+             </div>
+             <div class="row">
+                 <div class="col-md-6 mb-3">
+                     <label for="amount" class="form-label">Amount</label>
+                     <input type="number" class="form-control" id="amount" name="amount" required min="1">
+                 </div>
+                 <div class="col-md-6 mb-3">
+                     <label for="token_type" class="form-label">Token Type</label>
+                     <select class="form-select" id="token_type" name="token_type" required>
+                         <option value="{{ token_name }}" selected>{{ token_name }}</option>
+                         <option value="{{ secondary_token_name }}">{{ secondary_token_name }}</option>
+                     </select>
+                 </div>
+             </div>
+             <button type="submit" class="btn btn-primary">Submit Transaction</button>
+         </form>
 
         <hr>
 
@@ -678,7 +723,7 @@ HTML_TEMPLATE = """
                 <p><strong>ID:</strong> <span class="addr">{{ tx.transaction_id }}</span></p>
                 <p><strong>From:</strong> <span class="addr">{{ tx.sender }}</span></p>
                 <p><strong>To:</strong> <span class="addr">{{ tx.recipient }}</span></p>
-                <p><strong>Amount:</strong> {{ tx.amount }} {{ token_name }}</p>
+                <p><strong>Amount:</strong> {{ tx.amount }} {{ tx.token_type or token_name }}</p> {# Default to main if missing #}
                 <p><strong>Timestamp:</strong> {{ tx.timestamp | format_datetime }}</p>
             </div>
             {% endfor %}
@@ -703,7 +748,7 @@ HTML_TEMPLATE = """
                      <p><strong>ID:</strong> <span class="addr">{{ tx.transaction_id }}</span></p>
                      <p><strong>From:</strong> <span class="addr">{{ tx.sender }}</span></p>
                      <p><strong>To:</strong> <span class="addr">{{ tx.recipient }}</span></p>
-                     <p><strong>Amount:</strong> {{ tx.amount }} {{ token_name }}</p>
+                     <p><strong>Amount:</strong> {{ tx.amount }} {{ tx.token_type or token_name }}</p> {# Default to main if missing #}
                      <p><strong>Timestamp:</strong> {{ tx.timestamp | format_datetime }}</p>
                 </div>
                 {% endfor %}
@@ -766,6 +811,7 @@ def node_ui():
         peer_nodes=list(blockchain.nodes),
         known_wallets=sorted(list(blockchain.known_wallets)), # Sort for consistent display
         token_name=TOKEN_NAME,
+        secondary_token_name=SECONDARY_TOKEN_NAME,
         faucet_address=FAUCET_ADDRESS,
         balance_info=balance_info,
         balance_error=balance_error
@@ -778,24 +824,37 @@ def new_transaction():
     sender = None
     recipient = None
     amount_str = None
+    token_type = TOKEN_NAME # Default to main token
 
     if request.is_json:
          values = request.get_json()
-         required = ['sender', 'recipient', 'amount']
+         required = ['sender', 'recipient', 'amount'] # token_type is optional, defaults to MAIN
          if not values or not all(k in values for k in required):
-             return jsonify({'message': 'Missing values (sender, recipient, amount)'}), 400
+             return jsonify({'message': 'Missing required values (sender, recipient, amount)'}), 400
          sender = values['sender']
          recipient = values['recipient']
          amount_str = values['amount']
+         token_type = values.get('token_type', TOKEN_NAME) # Get token_type if provided
     else: # Handle form data from UI
          values = request.form
-         required = ['sender', 'recipient', 'amount']
+         required = ['sender', 'recipient', 'amount', 'token_type'] # token_type is now required from form
          if not all(k in values for k in required):
-             flash('Missing values in transaction form (sender, recipient, amount)', 'danger')
+             flash('Missing values in transaction form (sender, recipient, amount, token_type)', 'danger')
              return redirect(url_for('node_ui'))
          sender = values['sender']
          recipient = values['recipient']
          amount_str = values['amount']
+         token_type = values['token_type'] # Get token_type from form
+
+    # Validate token_type
+    if token_type not in [TOKEN_NAME, SECONDARY_TOKEN_NAME]:
+        msg = f"Invalid token_type specified: '{token_type}'. Must be '{TOKEN_NAME}' or '{SECONDARY_TOKEN_NAME}'."
+        if request.is_json:
+            return jsonify({'message': msg}), 400
+        else:
+            flash(msg, 'danger')
+            return redirect(url_for('node_ui'))
+
 
     # Validate amount
     try:
@@ -820,11 +879,11 @@ def new_transaction():
             return redirect(url_for('node_ui'))
 
 
-    # Create a new Transaction - add_transaction handles balance check
-    index = blockchain.add_transaction(sender, recipient, amount)
+    # Create a new Transaction - add_transaction handles balance check for the specific token
+    index = blockchain.add_transaction(sender, recipient, amount, token_type)
 
     if index:
-        msg = f'Transaction added successfully. It will be included in Block #{index}.'
+        msg = f'Transaction ({amount} {token_type}) added successfully. It will be included in Block #{index}.'
         response = {'message': msg}
         # Optionally broadcast transaction to peers immediately
         # broadcast_transaction(sender, recipient, amount) # Implement if needed
@@ -1017,20 +1076,36 @@ def new_wallet():
 
 @app.route('/balance/<address>', methods=['GET'])
 def get_balance_for_address(address):
-    """Calculates and returns the balance for a given address."""
+    """Returns the balances (main and secondary) for a specific address."""
+    if not blockchain:
+        return jsonify({'message': 'Blockchain not initialized'}), 500
+
     if not address:
-        return jsonify({'message': 'Address parameter is missing.'}), 400
+        return jsonify({'message': 'Address is required'}), 400
 
-    balance = blockchain.get_balance(address)
-    response = {'address': address, 'balance': balance, 'token_name': TOKEN_NAME}
+    balances = blockchain.get_balance(address) # Returns a dict {'MAIN': x, 'SECOND': y}
 
-    if request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html:
-        return jsonify(response), 200
-    else:
-        # Redirect back to UI, passing balance info as query parameters
-        # Need to handle potential errors if balance calc fails (though current impl doesn't fail)
-        balance_info_json = json.dumps(response)
-        return redirect(url_for('node_ui', balance_info=balance_info_json, address=address))
+    response = {
+        'address': address,
+        'balances': balances,
+        # Keep individual token names for clarity in response
+        'token_name': TOKEN_NAME,
+        'secondary_token_name': SECONDARY_TOKEN_NAME
+    }
+
+    # If request came from UI (accepts HTML), redirect back with balance info
+    if 'text/html' in request.accept_mimetypes:
+         # Need to json.dumps the response to pass it as a query parameter
+         try:
+             balance_info_json = json.dumps(response)
+             return redirect(url_for('node_ui', address=address, balance_info=balance_info_json))
+         except TypeError as e:
+             logging.error(f"Error serializing balance info for redirect: {e}")
+             flash(f"Error displaying balance for {address}: Could not serialize data.", "danger")
+             return redirect(url_for('node_ui'))
+
+    else: # API request
+         return jsonify(response), 200
 
 
 # --- Background Forging Thread ---
