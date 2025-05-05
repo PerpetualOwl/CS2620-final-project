@@ -142,6 +142,6 @@ Building this project provided significant practical learning beyond just blockc
 
 Defining the APIs using the OpenAPI specification (`blockchain_openapi.yaml`) proved incredibly useful. It forced us to think clearly about how the blockchain node and exchange server would interact, serving as a contract between the components even before full implementation. This made integration smoother and provided clear documentation. We also learned the practicalities of building and testing simple RESTful APIs using Python and Flask, understanding request handling, JSON serialization, and the importance of both unit tests (using `pytest`) for core logic and integration tests (using `requests`) for API endpoints. Overall, it was a practical introduction to building multi-component systems and the tools needed to manage their complexity.
 
+# presentation link:
 
-
-
+https://docs.google.com/presentation/d/1psz_UfMuVr__0O4LnneaEMYbQ6uc53p09YmRWcVGqo0/edit#slide=id.p3
