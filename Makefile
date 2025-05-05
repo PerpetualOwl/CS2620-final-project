@@ -6,6 +6,9 @@ PYTHON = python3
 # Base script name
 SCRIPT = blockchain_node.py
 
+# Base script name
+EXCHANGE_SCRIPT = exchange_server.py
+
 # Directory for node data
 DATA_DIR = data
 
@@ -73,3 +76,13 @@ test: install_dev
 	@echo "Running tests..."
 	@$(PYTHON) -m pytest -v tests/
 	@echo "Tests finished."
+
+run_exchange:
+	@echo "Starting exchange..."
+	@echo "Starting exchange on port 8000..."
+	@$(PYTHON) $(EXCHANGE_SCRIPT)
+
+stop_exchange:
+	@echo "Attempting to stop running exchange..."
+	@-pkill -f "$(PYTHON) $(EXCHANGE_SCRIPT)" || echo "No exchange found or pkill failed."
+	@echo "Stop command executed."
