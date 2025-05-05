@@ -73,3 +73,22 @@ API tests (`tests/test_api.py`) written.
 - Basic functionality confirmed.
 - Next major task: Decentralization. Networking (P2P), Consensus algorithm.
 - Initial consensus: Longest chain wins. Simple, defer complex logic.
+
+
+
+
+
+# Overall discussion
+
+
+## What our project does
+
+
+## How our project does it
+
+
+## What we learned while building it
+
+
+
+
